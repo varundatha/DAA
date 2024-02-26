@@ -1,0 +1,70 @@
+#include <stdio.h>
+
+// Function to find the maximum value that can be put in a knapsack of capacity W
+int knapsack(int W, int wt[], int val[], int n) {
+    int i, w;
+
+    // K[i][w] stores the maximum value that can be put in a knapsack of capacity w
+    //  using the first i items
+    int K[n + 1][W + 1];
+
+    // Build table K[][] in bottom-up manner
+    for (i = 0; i <= n; i++) {
+        for (w = 0; w <= W; w++) {
+            if (i == 0 || w == 0) {
+                // Base cases: If no items or no capacity, maximum value is 0
+                K[i][w] = 0;
+            } else if (wt[i - 1] <= w) {
+                // If the current item weight is less than or equal to capacity
+                // We can either include the item or exclude it and choose the maximum value
+                K[i][w] = max(val[i - 1] + K[i - 1][w - wt[i - 1]], K[i - 1][w]);
+            } else {
+                // If the current item weight is greater than capacity
+                // We can only exclude the item
+                K[i][w] = K[i - 1][w];
+            }
+        }
+    }
+
+    return K[n][W]; // The maximum value that can be put in a knapsack of capacity W
+}
+
+// Function to find the items included in the optimal solution (optional)
+void printKnapsack(int wt[], int val[], int W, int n) {
+    int i, w;
+    int K[n + 1][W + 1];
+
+    // Build table K[][] for finding the optimal solution
+    knapsack(W, wt, val, n);
+
+    // Initialize variables for backtracking
+    i = n;
+    w = W;
+
+    while (i > 0 && w > 0) {
+        // If the value in the current cell is the same as the cell above
+        // it means the current item was not included
+        if (K[i][w] == K[i - 1][w]) {
+            i--;
+        } else {
+            // Otherwise, the current item was included
+            printf("Item %d (%d,%d) is included in the optimal solution\n", i, wt[i - 1], val[i - 1]);
+            w -= wt[i - 1];
+            i--;
+        }
+    }
+}
+
+int main() {
+    int val[] = {60, 100, 120};
+    int wt[] = {10, 20, 30};
+    int W = 50;
+    int n = sizeof(val) / sizeof(val[0]);
+
+    printf("Max value = %d\n", knapsack(W, wt, val, n));
+
+    // Uncomment the following lines to print the items included in the optimal solution
+    // printKnapsack(wt, val, W, n);
+
+    return 0;
+}
