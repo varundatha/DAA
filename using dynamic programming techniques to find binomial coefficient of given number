@@ -1,0 +1,42 @@
+#include <stdio.h>
+
+// Function to calculate the binomial coefficient using dynamic programming
+int binomialCoefficient(int n, int r) {
+    // Create a 2D array to store intermediate results
+    int C[n + 1][r + 1];
+
+    // Initialize base cases
+    for (int i = 0; i <= n; i++) {
+        C[i][0] = 1;  // C(n, 0) = 1 for all n
+        C[0][i] = 0;  // C(0, r) = 0 for all r > 0
+    }
+
+    // Fill the table in a bottom-up manner
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= r && j <= i; j++) {
+            C[i][j] = C[i - 1][j] + C[i - 1][j - 1];  // Pascal's identity
+        }
+    }
+
+    // Return the desired coefficient
+    return C[n][r];
+}
+
+int main() {
+    int n, r;
+
+    printf("Enter the value of n: ");
+    scanf("%d", &n);
+
+    printf("Enter the value of r: ");
+    scanf("%d", &r);
+
+    if (n < 0 || r < 0 || r > n) {
+        printf("Invalid input: n and r must be non-negative integers and r <= n.\n");
+    } else {
+        int coefficient = binomialCoefficient(n, r);
+        printf("Binomial coefficient (nCr) is: %d\n", coefficient);
+    }
+
+    return 0;
+}
