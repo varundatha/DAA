@@ -1,0 +1,82 @@
+#include <stdio.h>
+#include <limits.h>
+
+#define MAX_N 100
+
+int min(int a, int b) {
+    return a < b ? a : b;
+}
+
+// Function to calculate the minimum cost of visiting all cities and returning to the starting city
+int tsp(int graph[][MAX_N], int n) {
+    // dp[i][j] stores the minimum cost of visiting all cities starting from city 'i'
+    // and ending at city 'j' (including city 'i' in the itinerary) using the remaining
+    // n-2 cities, excluding city 'i' and city 'j'
+    int dp[MAX_N][MAX_N];
+
+    // Initialize dp table with infinity except for the diagonal (where cost is 0)
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            if (i == j) {
+                dp[i][j] = 0;
+            } else {
+                dp[i][j] = INT_MAX;
+            }
+        }
+    }
+
+    // Fill the dp table in a bottom-up manner
+    for (int k = 2; k <= n - 1; k++) {
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                // If 'i', 'j', and 'k' are distinct cities
+                if (i != j && i != k && j != k) {
+                    // Consider visiting city 'k' before city 'j'
+                    int cost = graph[i][k] + dp[k][j];
+                    if (cost < dp[i][j]) {
+                        dp[i][j] = cost;
+                    }
+                }
+            }
+        }
+    }
+
+    // Find the minimum cost starting from any city and returning to the same city
+    int minCost = INT_MAX;
+    for (int i = 0; i < n; i++) {
+        minCost = min(minCost, dp[i][i]);
+    }
+
+    return minCost;
+}
+
+int main() {
+    int n;
+
+    printf("Enter the number of cities: ");
+    scanf("%d", &n);
+
+    if (n < 3) {
+        printf("Invalid input: Number of cities must be at least 3.\n");
+        return 1;
+    }
+
+    int graph[MAX_N][MAX_N];
+
+    printf("Enter the distances between cities (adjacency matrix):\n");
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            scanf("%d", &graph[i][j]);
+        }
+    }
+
+    int minCost = tsp(graph, n);
+
+    if (minCost == INT_MAX) {
+        printf("No solution exists.\n");
+    } else {
+        printf("Minimum cost of visiting all cities and returning to starting city: %d\n", minCost);
+    }
+
+    return 0;
+}
