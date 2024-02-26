@@ -1,0 +1,90 @@
+#include <stdio.h>
+#include <limits.h>
+
+#define MAX_N 100
+
+// Function to get the minimum value among three numbers
+int min(int a, int b, int c) {
+    return a < b ? (a < c ? a : c) : (b < c ? b : c);
+}
+
+// Function to construct the optimal binary search tree
+void constructOBST(int freq[], int n, int root[], int parent[]) {
+    int i, j, k;
+
+    // `C[i][j]` stores the minimum cost of a subtree with keys from i to j (inclusive)
+    int C[MAX_N][MAX_N];
+
+    // `S[i][j]` stores the root of the subtree with minimum cost for keys from i to j (inclusive)
+    int S[MAX_N][MAX_N];
+
+    // Initialize cost and root for single key subtrees
+    for (i = 0; i <= n - 1; i++) {
+        C[i][i] = freq[i];
+        S[i][i] = i;
+    }
+
+    // Fill the tables using dynamic programming
+    for (l = 2; l <= n; l++) {
+        for (i = 0; i <= n - l; i++) {
+            j = i + l - 1;
+            C[i][j] = INT_MAX;
+            for (k = i; k <= j - 1; k++) {
+                int cost = C[i][k] + C[k + 1][j] + sum(freq, i, j);
+                if (cost < C[i][j]) {
+                    C[i][j] = cost;
+                    S[i][j] = k;
+                }
+            }
+        }
+    }
+
+    // Construct the tree using the information in the S table
+    i = 0;
+    j = n - 1;
+    constructTree(S, i, j, root, parent);
+}
+
+// Function to construct the tree recursively
+void constructTree(int S[][MAX_N], int i, int j, int root[], int parent[]) {
+    if (i == j) {
+        root[i] = i;
+        parent[i] = -1;
+    } else {
+        root[i] = S[i][j];
+        parent[root[i]] = i;
+        constructTree(S, i, S[i][j] - 1, root, parent);
+        constructTree(S, S[i][j] + 1, j, root, parent);
+    }
+}
+
+// Function to calculate the sum of frequencies from i to j (inclusive)
+int sum(int freq[], int i, int j) {
+    int sum = 0;
+    for (int k = i; k <= j; k++) {
+        sum += freq[k];
+    }
+    return sum;
+}
+
+// Function to print the constructed tree
+void printTree(int root[], int n) {
+    printf("Inorder traversal: ");
+    for (int i = 0; i < n; i++) {
+        printf("%d ", root[i]);
+    }
+    printf("\n");
+}
+
+int main() {
+    int freq[] = {2, 3, 5, 9, 2};
+    int n = sizeof(freq) / sizeof(freq[0]);
+
+    int root[n], parent[n];
+
+    constructOBST(freq, n, root, parent);
+
+    printTree(root, n);
+
+    return 0;
+}
