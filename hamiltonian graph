@@ -1,0 +1,25 @@
+#include <stdio.h>
+#include <stdbool.h>
+
+#define V 5
+
+void printSolution(int path[]) {
+    printf("Solution Exists: Following is one Hamiltonian cycle\n");
+    for (int i = 0; i < V; i++)
+        printf(" %d ", path[i]);
+    printf(" %d ", path[0]);
+    printf("\n");
+}
+
+bool isSafe(int v, bool graph[V][V], int path[], int pos) {
+    if (!graph[path[pos - 1]][v])
+        return false;
+    for (int i = 0; i < pos; i++)
+        if (path[i] == v)
+            return false;
+    return true;
+}
+
+bool hamCycleUtil(bool graph[V][V], int path[], int pos) {
+    if (pos == V) {
+        if (graph[path[pos - 1]][
