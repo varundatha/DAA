@@ -1,0 +1,26 @@
+#include <stdio.h>
+
+void containerLoader(int containers[], int n, int capacity) {
+    int current_load = 0, container_count = 1;
+    printf("Container %d: ", container_count);
+
+    for (int i = 0; i < n; i++) {
+        if (current_load + containers[i] > capacity) {
+            printf("\n");
+            current_load = 0;
+            container_count++;
+            printf("Container %d: ", container_count);
+        }
+        printf("%d ", containers[i]);
+        current_load += containers[i];
+    }
+    printf("\n");
+}
+
+int main() {
+    int containers[] = {10, 20, 30, 40, 50, 60, 70, 80, 90};
+    int n = sizeof(containers) / sizeof(containers[0]);
+    int capacity = 100;
+    containerLoader(containers, n, capacity);
+    return 0;
+}
