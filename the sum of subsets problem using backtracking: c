@@ -1,0 +1,37 @@
+#include <stdio.h>
+
+#define MAXCANDIDATES 100
+
+int c[MAXCANDIDATES];
+int n;
+
+void process_solution(int a[], int k) {
+    int sum = 0;
+    for (int i = 1; i <= k; i++) {
+        if (a[i] == 1)
+            sum += c[i];
+    }
+    printf("Sum: %d\n", sum);
+}
+
+void backtrack(int a[], int k, int input) {
+    if (k == input)
+        process_solution(a, k);
+    else {
+        k++;
+        for (int i = 0; i <= 1; i++) {
+            a[k] = i;
+            backtrack(a, k, input);
+        }
+    }
+}
+
+int main() {
+    int a[MAXCANDIDATES];
+    n = 3; // Number of elements in the set
+    c[1] = 2;
+    c[2] = 3;
+    c[3] = 4;
+    backtrack(a, 0, n);
+    return 0;
+}
